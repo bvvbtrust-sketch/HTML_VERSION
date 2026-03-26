@@ -416,7 +416,7 @@
     window.netlifyIdentity.on("init", user => {
       if (!user) {
         window.netlifyIdentity.on("login", () => {
-          // Once the user sets their password and logs in, send them to admin
+          // Redirects to the admin portal after a successful login
           document.location.href = "/admin/";
         });
       }
