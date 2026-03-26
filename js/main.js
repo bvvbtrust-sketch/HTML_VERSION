@@ -2,39 +2,48 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLang = 'en';
     const langToggleBtn = document.getElementById('langToggle');
 
-    // --- Language Switcher ---
-    function updateLanguage(lang) {
-        currentLang = lang;
-        langToggleBtn.textContent = lang === 'en' ? 'తెలుగు' : 'English';
-        
-        // Update font families based on language
-        document.body.style.fontFamily = lang === 'en' ? "'Montserrat', sans-serif" : "'Noto Serif Telugu', serif";
-        
-        // Update language attributes and scaling
-        document.documentElement.setAttribute('lang', lang);
-        if (lang === 'te') {
-            document.documentElement.classList.add('lang-te');
-        } else {
-            document.documentElement.classList.remove('lang-te');
-        }
+    // --- Async Language Switcher ---
+    // Modified to fetch external JSON files for Decap CMS compatibility
+    async function updateLanguage(lang) {
+        try {
+            const response = await fetch(`js/${lang}.json`);
+            if (!response.ok) throw new Error(`Could not load ${lang}.json`);
+            const langData = await response.json();
 
-        // Update all data-i18n elements
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const keyPath = el.getAttribute('data-i18n');
-            const keys = keyPath.split('.');
-            let text = translations[lang];
+            currentLang = lang;
+            langToggleBtn.textContent = lang === 'en' ? 'తెలుగు' : 'English';
             
-            // traverse the json object
-            keys.forEach(k => { text = text[k]; });
+            // Update font families based on language
+            document.body.style.fontFamily = lang === 'en' ? "'Montserrat', sans-serif" : "'Noto Serif Telugu', serif";
             
-            if (text) {
-                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                    el.placeholder = text;
-                } else {
-                    el.textContent = text;
-                }
+            // Update language attributes and scaling
+            document.documentElement.setAttribute('lang', lang);
+            if (lang === 'te') {
+                document.documentElement.classList.add('lang-te');
+            } else {
+                document.documentElement.classList.remove('lang-te');
             }
-        });
+
+            // Update all data-i18n elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const keyPath = el.getAttribute('data-i18n');
+                const keys = keyPath.split('.');
+                let text = langData; // Start with the fetched JSON data
+                
+                // traverse the json object
+                keys.forEach(k => { if (text) text = text[k]; });
+                
+                if (text) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = text;
+                    } else {
+                        el.textContent = text;
+                    }
+                }
+            });
+        } catch (error) {
+            console.error("Translation Error:", error);
+        }
     }
 
     langToggleBtn.addEventListener('click', () => {
@@ -95,9 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // Remove active class from all links
                 navLinks.forEach(link => link.classList.remove('active'));
-                // Add active class to the current intersecting section's link
                 const activeLink = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
                 if (activeLink) activeLink.classList.add('active');
             }
@@ -147,14 +154,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (slides.length > 0) {
         showSlides(slideIndex);
-        carouselInterval = setInterval(() => nextSlide(1), 4000); // Auto-slide every 4s
+        carouselInterval = setInterval(() => nextSlide(1), 4000);
         
         const prevBtn = document.querySelector('.carousel-prev');
         const nextBtn = document.querySelector('.carousel-next');
-        
         if (prevBtn) prevBtn.addEventListener('click', () => nextSlide(-1));
         if (nextBtn) nextBtn.addEventListener('click', () => nextSlide(1));
-        
         dots.forEach((dot, index) => {
             dot.addEventListener('click', () => currentSlide(index));
         });
@@ -175,12 +180,12 @@ document.addEventListener('DOMContentLoaded', () => {
             currentLightboxIndex = index;
             lightboxImg.src = galleryImages[currentLightboxIndex].src;
             lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            document.body.style.overflow = 'hidden';
         }
 
         function closeLightbox() {
             lightbox.classList.remove('active');
-            document.body.style.overflow = 'auto'; // Restore scrolling
+            document.body.style.overflow = 'auto';
         }
 
         function changeLightboxImage(direction) {
@@ -198,12 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (prevBtn) prevBtn.addEventListener('click', () => changeLightboxImage(-1));
         if (nextBtn) nextBtn.addEventListener('click', () => changeLightboxImage(1));
 
-        // Close when clicking outside the image
         lightbox.addEventListener('click', (e) => {
             if (e.target === lightbox) closeLightbox();
         });
         
-        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (!lightbox.classList.contains('active')) return;
             if (e.key === 'Escape') closeLightbox();
@@ -212,6 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initialize
+    // Initialize with current language JSON
     updateLanguage(currentLang);
 });
