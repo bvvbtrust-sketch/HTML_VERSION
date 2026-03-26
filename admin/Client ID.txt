@@ -1,5 +1,0 @@
-Client ID
-Ov23lizjJMupBpZ9BePU
-
-Client Secrets
-0bc83b3b91fcdd9246fcbcec19eef58fb5c3c75c
