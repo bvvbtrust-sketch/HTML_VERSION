@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="2025 Photo Gallery - Brahmashri Valiveru VenkataRama Bhotulu Trust">
+    <title>2025 Gallery - BVVB Trust</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Noto+Serif+Telugu:wght@400;600;700&family=Tiro+Telugu:ital@0;1&family=Varela+Round&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main>
+        <!-- Hero Section -->
+        <div class="history-hero" style="padding: 3rem 2rem; text-align: center;">
+            <div style="position: absolute; top: 20px; right: 20px; z-index: 100;">
+                <button class="lang-toggle-btn" id="langToggle" style="background: rgba(255,255,255,0.1); color: white; border-color: white; backdrop-filter: blur(5px);">తెలుగు</button>
+            </div>
+            
+            <div style="text-align: left; max-width: 900px; margin: 0 auto;">
+                <a href="index.html" class="legal-back-btn" data-i18n="history.back">← Back to Home</a>
+            </div>
+            
+            <div class="history-hero-content">
+                <h1 class="history-title" data-i18n="gallery_page.title">2025 Photo Gallery</h1>
+                <p class="history-epithet" style="color: #ffd085; font-style: italic; margin-top: 10px;" data-i18n="gallery_page.desc">Glimpses of sacred events, rituals, and celebrations from the year 2025.</p>
+            </div>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="gallery-page-container">
+            <div class="gallery-page-grid">
+                <!-- Add/Edit image tags here for the 2025 events -->
+                <div class="gallery-item"><img src="gallery/2025/photo_1.jpg" alt="2025 Event Photo 1" loading="lazy"></div>
+                <div class="gallery-item"><img src="gallery/2025/photo_2.jpg" alt="2025 Event Photo 2" loading="lazy"></div>
+                <div class="gallery-item"><img src="gallery/2025/photo_3.jpg" alt="2025 Event Photo 3" loading="lazy"></div>
+                <div class="gallery-item"><img src="gallery/2025/photo_4.jpg" alt="2025 Event Photo 4" loading="lazy"></div>
+                <div class="gallery-item"><img src="gallery/2025/photo_5.jpg" alt="2025 Event Photo 5" loading="lazy"></div>
+                <div class="gallery-item"><img src="gallery/2025/photo_6.jpg" alt="2025 Event Photo 6" loading="lazy"></div>
+                <div class="gallery-item"><img src="gallery/2025/photo_7.jpg" alt="2025 Event Photo 7" loading="lazy"></div>
+                <div class="gallery-item"><img src="gallery/2025/photo_8.jpg" alt="2025 Event Photo 8" loading="lazy"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close" aria-label="Close">&times;</span>
+        <button class="lightbox-prev" aria-label="Previous image">&#10094;</button>
+        <img class="lightbox-content" id="lightbox-img" alt="Enlarged gallery view">
+        <button class="lightbox-next" aria-label="Next image">&#10095;</button>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTopBtn" class="scroll-to-top" aria-label="Scroll to top">↑</button>
+
+    <script src="translations.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
