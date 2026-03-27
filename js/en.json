@@ -103,6 +103,10 @@
     "e18": { "date": "Magha Bahula Trayodasi", "name": "Maha Shivaratri" },
     "viewGallery": "View Gallery 📸"
   },
+  "gallery_page": {
+  "title": "2025 Photo Gallery",
+  "desc": "Glimpses of sacred events, rituals, and celebrations from the year 2025."
+},
   "contact": {
     "tag": "Get in Touch",
     "title": "We'd Love to Hear From You",
