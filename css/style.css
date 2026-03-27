@@ -100,9 +100,23 @@ a { text-decoration: none; color: inherit; }
 .event-info h3 { margin-bottom: 0; color: #333; font-size: 1.15rem; }
 
 /* Event Card Links & Gallery Page */
-.event-gallery-link { display: inline-block; margin-top: 10px; font-size: 0.95rem; color: var(--primary-color); font-weight: bold; transition: color 0.3s ease; }
-.event-gallery-link:hover { color: #d68910; text-decoration: underline; }
+.event-gallery-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 12px;
+    background-color: #f1c40f; /* Match your trust theme */
+    color: #3d2b1f;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
 
+.event-gallery-link:hover {
+    transform: scale(1.05);
+    background-color: #d4ac0d;
+}
 .gallery-page-container { padding: 60px 5%; background: #fdfdfd; min-height: 50vh; }
 .gallery-page-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
 .gallery-item { overflow: hidden; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; aspect-ratio: 4/3; }
