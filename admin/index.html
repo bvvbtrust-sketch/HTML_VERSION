@@ -4,8 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager</title>
+
+  <script>
+    window.CMS_MANUAL_INIT = true;
+  </script>
 </head>
 <body>
+  <div id="nc-root"></div>
+
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
   <script>
@@ -13,29 +19,13 @@
       config: {
         backend: {
           name: "github",
-          repo: "bvvbtrust-sketch/HTML_VERSION",   // <-- change if needed
-          branch: "main",                          // <-- confirm branch
+          repo: "bvvbtrust-sketch/HTML_VERSION",
+          branch: "main",
           base_url: "https://test2.bvvbtrust.org",
           auth_endpoint: "auth"
         },
         media_folder: "images/uploads",
-        public_folder: "/images/uploads",
-        collections: [
-          {
-            name: "pages",
-            label: "Pages",
-            files: [
-              {
-                label: "Home",
-                name: "home",
-                file: "index.html",
-                fields: [
-                  { label: "Title", name: "title", widget: "string" }
-                ]
-              }
-            ]
-          }
-        ]
+        public_folder: "/images/uploads"
       }
     });
   </script>
