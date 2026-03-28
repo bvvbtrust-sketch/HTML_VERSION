@@ -20,21 +20,24 @@
   <script src="https://unpkg.com/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
   <!-- Manual init -->
-  <script>
-    fetch('/admin/config.yaml')
-      .then(res => {
-        if (!res.ok) {
-          throw new Error("Config not found");
-        }
-        return res.text();
-      })
-      .then(text => {
-        const config = jsyaml.load(text);
-        CMS.init({ config });
-      })
-      .catch(err => {
-        console.error("Config load failed:", err);
-      });
-  </script>
+<script>
+  fetch('/admin/config.yaml')
+    .then(res => {
+      console.log("FETCH STATUS:", res.status);
+      return res.text();
+    })
+    .then(text => {
+      console.log("CONFIG TEXT:", text);
+
+      const config = jsyaml.load(text);
+      console.log("PARSED CONFIG:", config);
+
+      CMS.init({ config });
+      console.log("CMS INIT CALLED");
+    })
+    .catch(err => {
+      console.error("CONFIG LOAD ERROR:", err);
+    });
+</script>
 </body>
 </html>
