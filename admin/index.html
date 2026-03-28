@@ -5,21 +5,29 @@
   <title>Content Manager</title>
 </head>
 <body>
+  <!-- Include the CMS script but do NOT let it auto-initialize -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
   <script>
-    // 1. Fetch the file manually
+    // 1. Manually fetch the config content as plain text
     fetch('./config.yml')
-      .then(response => response.text()) // Get as text, ignoring Content-Type
+      .then(response => {
+        if (!response.ok) throw new Error("Could not find config.yml");
+        return response.text();
+      })
       .then(text => {
-        // 2. Parse the text as JSON/YAML
-        const config = JSON.parse(text);
-        
-        // 3. Manually initialize the CMS
-        window.CMS.init({ config });
+        // 2. We parse the text as JSON manually. 
+        // This ignores the server's "text/plain" error.
+        const configData = JSON.parse(text);
+
+        // 3. Manually initialize the CMS with our data
+        window.CMS.init({
+          config: configData
+        });
       })
       .catch(err => {
-        console.error("Manual config load failed:", err);
+        console.error("Manual Load Error:", err);
+        document.body.innerHTML = "<h1>Config Error</h1><p>Check the browser console.</p>";
       });
   </script>
 </body>
