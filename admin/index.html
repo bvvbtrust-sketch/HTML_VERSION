@@ -7,6 +7,20 @@
   <link href="config.json" type="application/json" rel="cms-config-url">
 </head>
 <body>
+  <!-- Include the CMS library but don't let it auto-initialize -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  
+  <script>
+    // Manually fetch the JSON and initialize the CMS
+    fetch('./config.json')
+      .then(response => {
+        if (!response.ok) throw new Error('config.json not found');
+        return response.json();
+      })
+      .then(config => {
+        CMS.init({ config });
+      })
+      .catch(err => console.error('CMS Load Error:', err));
+  </script>
 </body>
 </html>
