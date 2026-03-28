@@ -1,0 +1,178 @@
+backend:
+  name: github
+  repo: bvvbtrust-sketch/HTML_VERSION
+  branch: main
+  # Pointing to your Node.js proxy on test2
+  base_url: https://test2.bvvbtrust.org
+  auth_endpoint: auth
+
+media_folder: "images"
+public_folder: "images"
+
+collections:
+  - name: "website_content"
+    label: "Website Content"
+    delete: false
+    editor:
+      preview: false
+    files:
+      - label: "English Content"
+        name: "en_content"
+        file: "js/en.json"
+        fields:
+          - { label: "Trust Name", name: "trustName", widget: "string" }
+          - { label: "Motto", name: "motto", widget: "string" }
+          
+          - label: "Navigation Menu"
+            name: "nav"
+            widget: "object"
+            fields:
+              - { label: "Home", name: "home", widget: "string" }
+              - { label: "About", name: "about", widget: "string" }
+              - { label: "Programs", name: "programs", widget: "string" }
+              - { label: "Events", name: "events", widget: "string" }
+              - { label: "Contact", name: "contact", widget: "string" }
+              - { label: "Donate", name: "donate", widget: "string" }
+
+          - label: "Hero Section"
+            name: "hero"
+            widget: "object"
+            fields:
+              - { label: "Welcome Text", name: "welcome", widget: "string" }
+              - { label: "Main Description", name: "desc1", widget: "text" }
+              - { label: "Sanskrit Shloka", name: "shloka1", widget: "text" }
+              - { label: "Shloka Caption", name: "shloka1_caption", widget: "string" }
+              - { label: "Shloka Meaning", name: "meaning1", widget: "text" }
+              - { label: "History Button", name: "btnHistory", widget: "string" }
+              - { label: "Learn More Button", name: "btnLearn", widget: "string" }
+
+          - label: "About Section"
+            name: "about"
+            widget: "object"
+            fields:
+              - { label: "Section Tag", name: "tag", widget: "string" }
+              - { label: "Section Title", name: "title", widget: "string" }
+              - { label: "Main Description", name: "desc", widget: "text" }
+              - { label: "History Page Link Text", name: "historyLink", widget: "string" }
+              - { label: "Heritage Title", name: "heritageTitle", widget: "string" }
+              - { label: "Heritage Description", name: "heritageDesc", widget: "text" }
+              - { label: "Vision Title", name: "visionTitle", widget: "string" }
+              - { label: "Vision Description", name: "visionDesc", widget: "text" }
+              - { label: "Mission Title", name: "missionTitle", widget: "string" }
+              - { label: "Mission List Items", name: "missionList", widget: "list" }
+
+          - label: "Programs Section"
+            name: "programs"
+            widget: "object"
+            fields:
+              - { label: "Section Tag", name: "tag", widget: "string" }
+              - { label: "Section Title", name: "title", widget: "string" }
+              - label: "Program 1"
+                name: "p1"
+                widget: "object"
+                fields:
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Description", name: "desc", widget: "text" }
+                  - { label: "Features List", name: "items", widget: "list" }
+              - label: "Program 2"
+                name: "p2"
+                widget: "object"
+                fields:
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Description", name: "desc", widget: "text" }
+                  - { label: "Features List", name: "items", widget: "list" }
+              - label: "Program 3"
+                name: "p3"
+                widget: "object"
+                fields:
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Description", name: "desc", widget: "text" }
+                  - { label: "Features List", name: "items", widget: "list" }
+              - label: "Program 4"
+                name: "p4"
+                widget: "object"
+                fields:
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Description", name: "desc", widget: "text" }
+                  - { label: "Features List", name: "items", widget: "list" }
+
+          - label: "Events & Celebrations"
+            name: "events"
+            widget: "object"
+            fields:
+              - { label: "Section Tag", name: "tag", widget: "string" }
+              - { label: "Section Title", name: "title", widget: "string" }
+              - { label: "Gallery Button Text", name: "viewGallery", widget: "string" }
+              - label: "Event Items"
+                name: "event_items"
+                widget: "list"
+                fields:
+                  - { label: "Event Name", name: "name", widget: "string" }
+                  - { label: "Date", name: "date", widget: "string" }
+
+          - label: "Contact Section"
+            name: "contact"
+            widget: "object"
+            fields:
+              - { label: "Section Tag", name: "tag", widget: "string" }
+              - { label: "Section Title", name: "title", widget: "string" }
+              - { label: "Office Label", name: "office", widget: "string" }
+              - { label: "Office Address", name: "officeAddr", widget: "text" }
+              - { label: "Temple Label", name: "temple", widget: "string" }
+              - { label: "Temple Address", name: "templeAddr", widget: "text" }
+              - { label: "Call Label", name: "call", widget: "string" }
+              - { label: "Email Label", name: "email", widget: "string" }
+              - { label: "Send Button Text", name: "btn", widget: "string" }
+
+          - label: "Donate Section"
+            name: "donate"
+            widget: "object"
+            fields:
+              - { label: "Section Tag", name: "tag", widget: "string" }
+              - { label: "Section Title", name: "title", widget: "string" }
+              - { label: "Description 1", name: "desc1", widget: "text" }
+              - { label: "Description 2", name: "desc2", widget: "text" }
+              - { label: "Description 3", name: "desc3", widget: "text" }
+
+          - label: "Footer Section"
+            name: "footer"
+            widget: "object"
+            fields:
+              - { label: "About Title", name: "aboutTitle", widget: "string" }
+              - { label: "About Description", name: "aboutDesc", widget: "text" }
+              - { label: "Registration No", name: "regNo", widget: "string" }
+              - { label: "Quick Links Title", name: "quickLinksTitle", widget: "string" }
+              - { label: "Connect Title", name: "connectTitle", widget: "string" }
+              - { label: "Copyright Text", name: "copyright", widget: "string" }
+
+          - label: "History Page"
+            name: "history"
+            widget: "object"
+            fields:
+              - { label: "Page Title", name: "title", widget: "string" }
+              - { label: "Epithet", name: "epithet", widget: "string" }
+              - { label: "Roots Paragraph 1", name: "roots.p1", widget: "text" }
+              - { label: "Roots Paragraph 2", name: "roots.p2", widget: "text" }
+              - { label: "Roots Paragraph 3", name: "roots.p3", widget: "text" }
+              - { label: "Family Tree Caption", name: "roots.image_caption", widget: "string" }
+              - { label: "Acharana Paragraph 1", name: "acharana.p1", widget: "text" }
+              - { label: "Acharana Paragraph 2", name: "acharana.p2", widget: "text" }
+              - { label: "Acharana Paragraph 3", name: "acharana.p3", widget: "text" }
+              - { label: "Vision Paragraph 4 (Bank)", name: "vision.p4", widget: "text" }
+              - { label: "Sacred Shloka", name: "vision.shloka", widget: "string" }
+              - { label: "Shloka Meaning", name: "vision.meaning", widget: "string" }
+
+      - label: "Telugu Content (తెలుగు)"
+        name: "te_content"
+        file: "js/te.json"
+        fields:
+          - { label: "ట్రస్ట్ పేరు", name: "trustName", widget: "string" }
+          - { label: "ధ్యేయం", name: "motto", widget: "string" }
+          
+          - label: "మెనూ (Navigation)"
+            name: "nav"
+            widget: "object"
+            fields:
+              - { label: "హోమ్", name: "home", widget: "string" }
+              - { label: "మా గురించి", name: "about", widget: "string" }
+              -
