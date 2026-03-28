@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <title>Content Manager</title>
 
-  <!-- 1. Disable auto init -->
+  <!-- Disable auto config -->
   <script>
     window.CMS_MANUAL_INIT = true;
 
-    // 2. Define config BEFORE CMS loads
+    // Define config BEFORE CMS loads
     window.CMS_CONFIG = {
       backend: {
         name: "github",
@@ -16,7 +16,8 @@
         branch: "main",
         base_url: "https://test2.bvvbtrust.org",
         auth_endpoint: "auth",
-        site_domain: "test1.bvvbtrust.org"
+        site_domain: "test1.bvvbtrust.org",
+        api_root: "https://api.github.com"
       },
 
       media_folder: "images",
@@ -58,10 +59,10 @@
 <body>
   <div id="nc-root"></div>
 
-  <!-- 3. Load CMS -->
+  <!-- Load CMS -->
   <script src="https://unpkg.com/decap-cms@3.11.0/dist/decap-cms.js"></script>
 
-  <!-- 4. Init immediately -->
+  <!-- Init -->
   <script>
     CMS.init({ config: window.CMS_CONFIG });
   </script>
