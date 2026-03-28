@@ -2,18 +2,19 @@
 <html>
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager</title>
 
-  <!-- Disable auto config -->
+  <!-- Disable auto init -->
   <script>
     window.CMS_MANUAL_INIT = true;
 
-    // Define config BEFORE CMS loads
+    // Minimal config (NO OAuth)
     window.CMS_CONFIG = {
       backend: {
-  name: "github",
-  repo: "bvvbtrust-sketch/HTML_VERSION",
-  branch: "main"
+        name: "github",
+        repo: "bvvbtrust-sketch/HTML_VERSION",
+        branch: "main"
       },
 
       media_folder: "images",
@@ -55,10 +56,10 @@
 <body>
   <div id="nc-root"></div>
 
-  <!-- Load CMS -->
+  <!-- Load Decap CMS -->
   <script src="https://unpkg.com/decap-cms@3.11.0/dist/decap-cms.js"></script>
 
-  <!-- Init -->
+  <!-- Init CMS -->
   <script>
     CMS.init({ config: window.CMS_CONFIG });
   </script>
