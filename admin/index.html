@@ -21,23 +21,41 @@
 
   <!-- Manual init -->
 <script>
-  fetch('/admin/config.yaml')
-    .then(res => {
-      console.log("FETCH STATUS:", res.status);
-      return res.text();
-    })
-    .then(text => {
-      console.log("CONFIG TEXT:", text);
+  window.CMS_MANUAL_INIT = true;
+</script>
 
-      const config = jsyaml.load(text);
-      console.log("PARSED CONFIG:", config);
+<script src="https://unpkg.com/decap-cms@3.11.0/dist/decap-cms.js"></script>
 
-      CMS.init({ config });
-      console.log("CMS INIT CALLED");
-    })
-    .catch(err => {
-      console.error("CONFIG LOAD ERROR:", err);
-    });
+<script>
+  CMS.init({
+    config: {
+      backend: {
+        name: "github",
+        repo: "bvvbtrust-sketch/HTML_VERSION",
+        branch: "main",
+        base_url: "https://test2.bvvbtrust.org",
+        auth_endpoint: "auth"
+      },
+      media_folder: "images",
+      public_folder: "images",
+      collections: [
+        {
+          name: "website_content",
+          label: "Website Content",
+          files: [
+            {
+              label: "English Content",
+              name: "en_content",
+              file: "js/en.json",
+              fields: [
+                { label: "Trust Name", name: "trustName", widget: "string" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  });
 </script>
 </body>
 </html>
