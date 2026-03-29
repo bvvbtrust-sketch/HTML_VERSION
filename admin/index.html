@@ -15,22 +15,33 @@
       },
       media_folder: "images",
       public_folder: "images",
+      // 🚩 Tell the CMS to ONLY look for .json extensions
+      extension: "json", 
+      format: "json",
       collections: [
         {
-          name: "main_content", // 🚩 Brand new name
-          label: "Website Editor",
+          name: "site_data",
+          label: "Website Content",
+          editor: { preview: false },
+          // 🚀 THE FIX: Explicitly list the files so it NEVER touches main.js
           files: [
             {
               label: "English Content",
-              name: "en_file",
-              file: "js/en.json",
-              fields: [{ label: "Trust Name", name: "trustName", widget: "string" }]
+              name: "en",
+              file: "js/en.json", // Direct path
+              fields: [
+                { label: "Trust Name", name: "trustName", widget: "string" },
+                { label: "Motto", name: "motto", widget: "string" }
+              ]
             },
             {
               label: "Telugu Content",
-              name: "te_file",
-              file: "js/te.json",
-              fields: [{ label: "Trust Name", name: "trustName", widget: "string" }]
+              name: "te",
+              file: "js/te.json", // Direct path
+              fields: [
+                { label: "Trust Name", name: "trustName", widget: "string" },
+                { label: "Motto", name: "motto", widget: "string" }
+              ]
             }
           ]
         }
@@ -43,8 +54,6 @@
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
     if (window.CMS) {
-      // 🚩 THE RESET: Clear old fragments of the 'site_data' or 'pages' collections
-      localStorage.removeItem("netlify-cms-user"); 
       window.CMS.init({ config: window.CMS_CONFIG });
     }
   </script>
