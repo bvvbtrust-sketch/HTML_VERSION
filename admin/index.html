@@ -6,16 +6,38 @@
   <title>Content Manager</title>
 
   <script>
-    // 1. Tell Decap we will initialize manually
-    window.CMS_MANUAL_INIT = true;
+    // 🔥 THE VAULT REDIRECT LOGIC
+    // 1. If we are inside the popup, grab the token from the URL and save it
+    const hash = window.location.hash;
+    if (hash.includes("access_token=")) {
+      const token = new URLSearchParams(hash.substring(1)).get("access_token");
+      
+      // Save it using both the new and legacy keys just to be completely safe
+      const userObj = JSON.stringify({ token: token, backendName: "github" });
+      localStorage.setItem("decap-cms-user", userObj);
+      localStorage.setItem("netlify-cms-user", userObj);
+      
+      // Close the popup!
+      window.close();
+    }
 
-    // 2. Pure, clean configuration (Notice site_domain is GONE)
+    // 2. If we are in the main window, listen for the vault to update
+    window.addEventListener("storage", (event) => {
+      if (event.key === "decap-cms-user" || event.key === "netlify-cms-user") {
+        console.log("Token detected in vault! Reloading into dashboard...");
+        window.location.reload();
+      }
+    });
+
+    // --- STANDARD CONFIG ---
+    window.CMS_MANUAL_INIT = true;
     window.CMS_CONFIG = {
       backend: {
         name: "github",
         repo: "bvvbtrust-sketch/HTML_VERSION",
         branch: "main",
-        base_url: "https://test2.bvvbtrust.org"
+        base_url: "https://test2.bvvbtrust.org",
+        auth_endpoint: "auth"
       },
       media_folder: "images",
       public_folder: "images",
@@ -23,26 +45,12 @@
         {
           name: "website_content",
           label: "Website Content",
-          delete: false,
-          editor: { preview: false },
           files: [
             {
               label: "English Content",
               name: "en_content",
               file: "js/en.json",
-              fields: [
-                { label: "Trust Name", name: "trustName", widget: "string" },
-                { label: "Motto", name: "motto", widget: "string" }
-              ]
-            },
-            {
-              label: "Telugu Content",
-              name: "te_content",
-              file: "js/te.json",
-              fields: [
-                { label: "ట్రస్ట్ పేరు", name: "trustName", widget: "string" },
-                { label: "ధ్యేయం", name: "motto", widget: "string" }
-              ]
+              fields: [{ label: "Trust Name", name: "trustName", widget: "string" }]
             }
           ]
         }
@@ -53,13 +61,11 @@
 
 <body>
   <div id="nc-root"></div>
-
-  <!-- Load Decap CMS -->
+  
   <script src="https://unpkg.com/decap-cms@^3.11.0/dist/decap-cms.js"></script>
-
-  <!-- Initialize without any interference -->
+  
   <script>
-    if (window.CMS) {
+    if (window.CMS && !window.location.hash.includes("access_token=")) {
       window.CMS.init({ config: window.CMS_CONFIG });
     }
   </script>
