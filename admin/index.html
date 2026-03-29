@@ -51,35 +51,40 @@
     };
 
     // 3. The "Perfect Profile" Auto-Login Listener
+// 3. The Anti-Loop Auto-Login Listener
     window.addEventListener("message", async (event) => {
       if (event.origin === "https://test2.bvvbtrust.org" && typeof event.data === "string" && event.data.includes("authorization:github:success")) {
-        console.log("1. Intercepted valid token! Fetching GitHub profile...");
+        
+        // 🚨 THE LOCK: If we are already processing the login, ignore all other messages from the popup!
+        if (sessionStorage.getItem("cms_is_logging_in")) return;
+        sessionStorage.setItem("cms_is_logging_in", "true");
+
+        console.log("1. Intercepted token! Locking down and closing popup...");
+        
+        // Force the popup to close from the main window so it stops yelling at us
+        if (event.source) {
+          event.source.close();
+        }
         
         try {
+          // Extract the token
           const jsonString = event.data.replace("authorization:github:success:", "");
           const payload = JSON.parse(jsonString);
-          const token = payload.token;
           
-          const userRes = await fetch("https://api.github.com/user", {
-            headers: { Authorization: `token ${token}` }
-          });
-          const userData = await userRes.json();
-          
-          console.log("2. Profile fetched:", userData.login);
-
+          // Save the exact bare-minimum object Decap needs
           const decapUser = {
-            token: token,
-            backendName: "github",
-            name: userData.name || userData.login,
-            login: userData.login,
-            avatar_url: userData.avatar_url
+            token: payload.token,
+            backendName: "github"
           };
           
           localStorage.setItem("decap-cms-user", JSON.stringify(decapUser));
-          console.log("3. Perfect profile saved! Reloading into dashboard...");
+          console.log("2. Token locked in vault. Reloading one time only...");
+          
+          // Reload the page
           window.location.reload();
         } catch (err) {
           console.error("Failed to process login:", err);
+          sessionStorage.removeItem("cms_is_logging_in"); // Unlock if it fails
         }
       }
     }, false);
@@ -95,7 +100,11 @@
 
   <!-- Initialize -->
   <script>
+sessionStorage.removeItem("cms_is_logging_in");
+    
+    // Boot Decap CMS
     if (window.CMS) {
+      console.log("Decap booting... Token in vault:", localStorage.getItem("decap-cms-user"));
       window.CMS.init({ config: window.CMS_CONFIG });
     } else {
       console.error("CMS library failed to load.");
