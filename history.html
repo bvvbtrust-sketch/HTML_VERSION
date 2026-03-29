@@ -10,73 +10,58 @@
     <link rel="stylesheet" href="css/style.css">
     
     <style>
-        /* Language-specific caption toggling */
-        /* These rules hide/show the correct span based on the <html> lang attribute */
+        /* Language Toggling Logic */
         html[lang="en"] .lang-te { display: none; }
         html[lang="te"] .lang-en { display: none; }
 
-        /* Family Tree Carousel Styles */
+        /* Carousel & Zoom Styles */
         .tree-carousel-container {
             position: relative;
-            max-width: 800px;
-            margin: 30px auto;
+            max-width: 850px;
+            margin: 40px auto;
             border: 1px solid #ddd;
             border-radius: 12px;
             overflow: hidden;
             background: #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
         }
-        .tree-slide {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            animation: fadeEffect 0.6s;
-        }
+        .tree-slide { display: none; text-align: center; padding: 20px 20px 10px 20px; animation: fadeEffect 0.6s; }
         .tree-slide.active { display: block !important; }
-        @keyframes fadeEffect {
-            from {opacity: 0.4;} to {opacity: 1;}
-        }
+        @keyframes fadeEffect { from {opacity: 0.4;} to {opacity: 1;} }
+        
         .tree-slide img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 6px;
-            display: block;
-            margin: 0 auto;
+            max-width: 100%; height: auto; border-radius: 6px;
+            display: block; margin: 0 auto; cursor: pointer;
+            transition: transform 0.2s ease;
         }
+        .tree-slide img:hover { transform: scale(1.01); }
+
         .image-caption {
-            font-style: italic;
-            font-size: 1rem;
-            color: #444;
-            margin-top: 15px;
-            padding: 0 40px;
-            line-height: 1.4;
-            min-height: 2.5em; /* Prevents layout jump */
+            font-style: italic; font-size: 1.05rem; color: #333;
+            margin: 25px 0 30px 0; padding: 0 50px; line-height: 1.6; min-height: 3.5em;
         }
+
         .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(61, 43, 31, 0.7);
-            color: white;
-            border: none;
-            padding: 15px 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            z-index: 10;
-            font-size: 18px;
+            position: absolute; top: 40%; transform: translateY(-50%);
+            background: rgba(61, 43, 31, 0.7); color: white; border: none;
+            padding: 18px 14px; cursor: pointer; z-index: 10; font-size: 20px;
         }
         .carousel-btn.prev { left: 0; border-radius: 0 4px 4px 0; }
         .carousel-btn.next { right: 0; border-radius: 4px 0 0 4px; }
-        .carousel-btn:hover { background: rgba(61, 43, 31, 0.9); }
         
-        .carousel-dots { text-align: center; padding: 12px; background: #fdfdfd; border-top: 1px solid #eee; }
-        .dot {
-            height: 12px; width: 12px; margin: 0 6px;
-            background-color: #bbb; border-radius: 50%;
-            display: inline-block; cursor: pointer;
-            transition: background-color 0.3s;
-        }
+        .carousel-dots { text-align: center; padding: 15px; background: #fdfdfd; border-top: 1px solid #eee; }
+        .dot { height: 12px; width: 12px; margin: 0 6px; background-color: #bbb; border-radius: 50%; display: inline-block; cursor: pointer; }
         .dot.active { background-color: #3d2b1f; }
+
+        /* Zoom Lightbox */
+        #treeLightbox {
+            display: none; position: fixed; z-index: 99999;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); align-items: center; justify-content: center;
+        }
+        .lightbox-img { max-width: 95%; max-height: 90vh; border-radius: 4px; animation: zoomIn 0.3s; }
+        @keyframes zoomIn { from {transform: scale(0.8); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+        .close-zoom { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -84,7 +69,7 @@
     <main class="history-page">
         <section class="history-hero">
             <div style="position: absolute; top: 20px; right: 20px; z-index: 100;">
-                <button class="lang-toggle-btn" id="langToggle" style="background: rgba(255,255,255,0.1); color: white; border-color: white; backdrop-filter: blur(5px);">తెలుగు</button>
+                <button class="lang-toggle-btn" id="langToggle">తెలుగు</button>
             </div>
             <a href="index.html" class="legal-back-btn" data-i18n="history.back">← Back to Home</a>
             <div class="history-hero-content">
@@ -129,28 +114,23 @@
                     <div class="tree-carousel-container">
                         <div class="tree-carousel-wrapper">
                             <div class="tree-slide active">
-                                <img src="images/family_tree_handwritten.jpeg" alt="Handwritten Family Tree">
+                                <img src="images/family_tree_handwritten.jpeg" alt="Handwritten Tree" class="zoom-trigger">
                                 <p class="image-caption">
                                     <span class="lang-en">The Handwritten family tree mentioned in the records.</span>
                                     <span class="lang-te">రికార్డులలో పేర్కొన్న చేతితో వ్రాసిన వంశవృక్షం.</span>
                                 </p>
                             </div>
                             <div class="tree-slide">
-                                <img src="images/family_tree_typed.jpeg" alt="Typed Family Tree">
+                                <img src="images/family_tree_typed.jpeg" alt="Typed Tree" class="zoom-trigger">
                                 <p class="image-caption">
                                     <span class="lang-en">The Typed version of the family tree for clarity.</span>
                                     <span class="lang-te">స్పష్టత కోసం టైప్ చేయబడిన వంశవృక్షం.</span>
                                 </p>
                             </div>
                         </div>
-                        
-                        <button class="carousel-btn prev" onclick="moveSlide(-1)" type="button">&#10094;</button>
-                        <button class="carousel-btn next" onclick="moveSlide(1)" type="button">&#10095;</button>
-                        
-                        <div class="carousel-dots">
-                            <span class="dot active" onclick="currentSlide(0)"></span>
-                            <span class="dot" onclick="currentSlide(1)"></span>
-                        </div>
+                        <button class="carousel-btn prev" onclick="moveSlide(-1)">&#10094;</button>
+                        <button class="carousel-btn next" onclick="moveSlide(1)">&#10095;</button>
+                        <div class="carousel-dots"><span class="dot active" onclick="currentSlide(0)"></span><span class="dot" onclick="currentSlide(1)"></span></div>
                     </div>
                 </section>
 
@@ -187,11 +167,8 @@
 
                 <section id="vision" class="history-chapter">
                     <h2 class="chapter-title"><span class="chapter-num">VII</span> <span data-i18n="history.ch.vision_clean"></span></h2>
-                    <p data-i18n="history.vision.p1"></p>
-                    <p data-i18n="history.vision.p2"></p>
-                    <p data-i18n="history.vision.p3"></p>
+                    <p data-i18n="history.vision.p1"></p><p data-i18n="history.vision.p2"></p><p data-i18n="history.vision.p3"></p>
                     <p data-i18n="history.vision.p4" style="margin: 20px 0; color: #555; font-weight: 600;"></p>
-                    
                     <div style="margin-top: 40px; padding: 30px; background: #fff9e6; border: 2px solid #f1c40f; border-radius: 15px; text-align: center;">
                         <p style="font-size: 1.4rem; color: #3d2b1f; font-weight: bold; margin-bottom: 10px;" data-i18n="history.vision.shloka"></p>
                         <p style="font-size: 1.1rem; color: #555; font-style: italic;" data-i18n="history.vision.meaning"></p>
@@ -201,69 +178,40 @@
         </div>
     </main>
 
+    <div id="treeLightbox" style="display:none;"><span class="close-zoom">&times;</span><img class="lightbox-img" id="lbImg"></div>
+
     <footer class="footer-v2">
         <div class="footer-content">
-            <div class="footer-col">
-                <div class="footer-box">
-                    <h4 data-i18n="footer.aboutTitle"></h4>
-                    <p data-i18n="footer.aboutDesc" style="text-align: justify;"></p>
-                    <p data-i18n="footer.regNo" style="margin-top: 10px; font-weight: bold;"></p>
-                </div>
-            </div>
-            <div class="footer-col">
-                <div class="footer-box inline-footer-links">
-                    <h4 data-i18n="footer.quickLinksTitle"></h4>
-                    <p>
-                        <a href="index.html#about" data-i18n="nav.about"></a> <span class="separator">|</span>
-                        <a href="index.html#programs" data-i18n="nav.programs"></a> <span class="separator">|</span>
-                        <a href="index.html#events" data-i18n="nav.events"></a> <span class="separator">|</span>
-                        <a href="index.html#donate" data-i18n="nav.donate"></a> <span class="separator">|</span>
-                        <a href="index.html#contact" data-i18n="nav.contact"></a>
-                    </p>
-                </div>
-            </div>
-            <div class="footer-col">
-                <div class="footer-box">
-                    <h4 data-i18n="footer.connectTitle"></h4>
-                    <div style="display: flex; gap: 15px;">
-                        </div>
-                </div>
-            </div>
+            <div class="footer-col"><div class="footer-box"><h4 data-i18n="footer.aboutTitle"></h4><p data-i18n="footer.aboutDesc" style="text-align: justify;"></p><p data-i18n="footer.regNo" style="margin-top: 10px; font-weight: bold;"></p></div></div>
+            <div class="footer-col"><div class="footer-box inline-footer-links"><h4 data-i18n="footer.quickLinksTitle"></h4><p><a href="index.html#about" data-i18n="nav.about"></a> | <a href="index.html#programs" data-i18n="nav.programs"></a> | <a href="index.html#events" data-i18n="nav.events"></a> | <a href="index.html#donate" data-i18n="nav.donate"></a> | <a href="index.html#contact" data-i18n="nav.contact"></a></p></div></div>
+            <div class="footer-col"><div class="footer-box"><h4 data-i18n="footer.connectTitle"></h4><div style="display: flex; gap: 15px;">
+                <a href="https://www.youtube.com/@BVVBTRUST" class="social-icon">YouTube</a>
+            </div></div></div>
         </div>
-        <div class="footer-bottom">
-            <p><span data-i18n="footer.copyright"></span> | <a href="privacy-policy.html" data-i18n="footer.privacy"></a> | <a href="terms-of-service.html" data-i18n="footer.terms"></a></p>
-        </div>
+        <div class="footer-bottom"><p><span data-i18n="footer.copyright"></span> | <a href="privacy-policy.html" data-i18n="footer.privacy"></a> | <a href="terms-of-service.html" data-i18n="footer.terms"></a></p></div>
     </footer>
 
-    <button id="scrollToTopBtn" class="scroll-to-top" aria-label="Scroll to top">↑</button>
-
+    <button id="scrollToTopBtn" class="scroll-to-top">↑</button>
     <script src="js/main.js"></script>
     <script>
-        // Carousel Logic
         let slideIndex = 0;
         const slides = document.getElementsByClassName("tree-slide");
         const dots = document.getElementsByClassName("dot");
-
-        function moveSlide(n) {
-            showSlides(slideIndex += n);
-        }
-
-        function currentSlide(n) {
-            showSlides(slideIndex = n);
-        }
-
+        function moveSlide(n) { showSlides(slideIndex += n); }
+        function currentSlide(n) { showSlides(slideIndex = n); }
         function showSlides(n) {
-            if (n >= slides.length) { slideIndex = 0 }
-            if (n < 0) { slideIndex = slides.length - 1 }
-            
-            for (let i = 0; i < slides.length; i++) {
-                slides[i].classList.remove("active");
-                dots[i].classList.remove("active");
-            }
-            
-            slides[slideIndex].classList.add("active");
-            dots[slideIndex].classList.add("active");
+            if (n >= slides.length) slideIndex = 0;
+            if (n < 0) slideIndex = slides.length - 1;
+            for (let i = 0; i < slides.length; i++) { slides[i].classList.remove("active"); dots[i].classList.remove("active"); }
+            slides[slideIndex].classList.add("active"); dots[slideIndex].classList.add("active");
         }
+        const lb = document.getElementById("treeLightbox");
+        const lbImg = document.getElementById("lbImg");
+        document.querySelectorAll('.zoom-trigger').forEach(img => {
+            img.addEventListener('click', function() { lb.style.display = "flex"; lbImg.src = this.src; document.body.style.overflow = 'hidden'; });
+        });
+        document.querySelector(".close-zoom").addEventListener('click', () => { lb.style.display = "none"; document.body.style.overflow = 'auto'; });
+        lb.addEventListener('click', (e) => { if (e.target !== lbImg) { lb.style.display = "none"; document.body.style.overflow = 'auto'; } });
     </script>
 </body>
 </html>
