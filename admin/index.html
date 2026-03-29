@@ -15,20 +15,21 @@
       },
       media_folder: "images",
       public_folder: "images",
-      // 🚩 Tell the CMS to ONLY look for .json extensions
-      extension: "json", 
+      // 🚩 Force JSON globally to prevent the 'main.js' interference
+      extension: "json",
       format: "json",
       collections: [
         {
-          name: "site_data",
+          name: "bvvb_editor", // 🚩 Unique name to bypass browser cache
           label: "Website Content",
           editor: { preview: false },
-          // 🚀 THE FIX: Explicitly list the files so it NEVER touches main.js
           files: [
             {
               label: "English Content",
-              name: "en",
-              file: "js/en.json", // Direct path
+              name: "en_data",
+              file: "js/en.json",
+              // 🚩 Tell React what to look for inside the JSON
+              identifier_field: "trustName", 
               fields: [
                 { label: "Trust Name", name: "trustName", widget: "string" },
                 { label: "Motto", name: "motto", widget: "string" }
@@ -36,11 +37,12 @@
             },
             {
               label: "Telugu Content",
-              name: "te",
-              file: "js/te.json", // Direct path
+              name: "te_data",
+              file: "js/te.json",
+              identifier_field: "trustName",
               fields: [
-                { label: "Trust Name", name: "trustName", widget: "string" },
-                { label: "Motto", name: "motto", widget: "string" }
+                { label: "ట్రస్ట్ పేరు", name: "trustName", widget: "string" },
+                { label: "ధ్యేయం", name: "motto", widget: "string" }
               ]
             }
           ]
@@ -54,6 +56,8 @@
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
     if (window.CMS) {
+      // 🚩 Clear the user session one last time to force a fresh pull from GitHub
+      localStorage.removeItem("decap-cms-user");
       window.CMS.init({ config: window.CMS_CONFIG });
     }
   </script>
