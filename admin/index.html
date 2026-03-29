@@ -6,68 +6,53 @@
   <title>Content Manager</title>
 
   <script>
-    // --- 1. THE POPUP LOGIC ---
-    // If this window is the popup returning from GitHub...
-    if (window.location.hash.includes("access_token=")) {
-      const token = new URLSearchParams(window.location.hash.substring(1)).get("access_token");
-      // Drop the token in the vault for the main window to find
-      localStorage.setItem("github_token_handoff", token);
-      window.close(); // Close the popup instantly
-    }
-
-    // --- 2. THE ORIGIN SPOOFER (The Trojan Horse) ---
-    // Decap CMS is extremely strict. It will ONLY accept a login message if the origin EXACTLY matches the base_url.
-    // We intercept Decap's listener and fake the origin so it accepts our message.
+    // --- 1. THE MESSAGE PROXY (The Sleight of Hand) ---
+    // We intercept Decap's message listener and alter the message on the fly
     const origAddEventListener = window.addEventListener;
     window.addEventListener = function(type, listener, options) {
       if (type === 'message') {
-        const origListener = listener;
-        listener = function(event) {
+        const proxyListener = function(event) {
           if (typeof event.data === 'string' && event.data.includes('authorization:github:success')) {
-            console.log("Intercepted token! Faking origin so Decap accepts it...");
-            const fakeEvent = new MessageEvent('message', {
-              data: event.data,
-              origin: "https://test2.bvvbtrust.org", // MUST match base_url
-              source: window
+            console.log("Intercepted the popup's message! Faking the origin to trick Decap...");
+            
+            // Wrap the event in a Proxy to lie about the origin while keeping the window source intact
+            const spoofedEvent = new Proxy(event, {
+              get: function(target, prop) {
+                // Tell Decap the message came from test2
+                if (prop === 'origin') return 'https://test2.bvvbtrust.org'; 
+                
+                const value = target[prop];
+                if (typeof value === 'function') return value.bind(target);
+                return value;
+              }
             });
-            return origListener.call(this, fakeEvent); // Hand it to Decap natively!
+            
+            // Hand the perfect, spoofed message to Decap's native engine!
+            return listener.call(this, spoofedEvent);
           }
-          return origListener.call(this, event);
+          return listener.call(this, event);
         };
+        return origAddEventListener.call(this, type, proxyListener, options);
       }
-      origAddEventListener.call(this, type, listener, options);
+      return origAddEventListener.call(this, type, listener, options);
     };
 
-    // --- 3. THE VAULT WATCHER ---
-    if (!window.location.hash.includes("access_token=")) {
-      localStorage.removeItem("github_token_handoff"); // Clear old handoffs
+    // --- 2. THE POPUP SENDER ---
+    // If this window is the popup returning from GitHub with the token...
+    if (window.location.hash.includes("access_token=")) {
+      const token = new URLSearchParams(window.location.hash.substring(1)).get("access_token");
+      const payload = 'authorization:github:success:{"token":"' + token + '","provider":"github"}';
       
-      const feedTokenToDecap = (token) => {
-        console.log("Token retrieved from popup! Feeding it to Decap CMS natively...");
-        const payload = `authorization:github:success:{"token":"${token}","provider":"github"}`;
-        // Fire the message from the main window to the main window
-        window.postMessage(payload, "*"); 
-      };
-
-      // Watch for the popup to drop the token
-      window.addEventListener("storage", (e) => {
-        if (e.key === "github_token_handoff" && e.newValue) {
-          feedTokenToDecap(e.newValue);
-          localStorage.removeItem("github_token_handoff");
-        }
-      });
+      if (window.opener) {
+        // Because the popup is now on test1, the browser WILL let this message through!
+        window.opener.postMessage(payload, "*");
+      }
       
-      // Backup watcher just in case 'storage' event fails
-      setInterval(() => {
-        const token = localStorage.getItem("github_token_handoff");
-        if (token) {
-          feedTokenToDecap(token);
-          localStorage.removeItem("github_token_handoff");
-        }
-      }, 500);
+      // Mission accomplished, close the popup.
+      window.close();
     }
 
-    // --- 4. CMS CONFIG ---
+    // --- 3. STANDARD CONFIG ---
     window.CMS_MANUAL_INIT = true;
     window.CMS_CONFIG = {
       backend: {
@@ -115,7 +100,7 @@
   <script src="https://unpkg.com/decap-cms@^3.11.0/dist/decap-cms.js"></script>
   
   <script>
-    // Boot Decap CMS normally if we are in the main window
+    // Only boot Decap if we are in the main window (not the popup)
     if (window.CMS && !window.location.hash.includes("access_token=")) {
       window.CMS.init({ config: window.CMS_CONFIG });
     }
