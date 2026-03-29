@@ -9,14 +9,13 @@
     // 1. Tell Decap we will initialize manually
     window.CMS_MANUAL_INIT = true;
 
-    // 2. Define the exact configuration
+    // 2. Pure, clean configuration (Notice site_domain is GONE)
     window.CMS_CONFIG = {
       backend: {
         name: "github",
         repo: "bvvbtrust-sketch/HTML_VERSION",
         branch: "main",
-        base_url: "https://test2.bvvbtrust.org",
-        auth_endpoint: "auth"
+        base_url: "https://test2.bvvbtrust.org"
       },
       media_folder: "images",
       public_folder: "images",
@@ -49,81 +48,19 @@
         }
       ]
     };
-
-    // 3. The "Perfect Profile" Auto-Login Listener
-// 3. The Anti-Loop Auto-Login Listener
-    window.addEventListener("message", async (event) => {
-      if (event.origin === "https://test2.bvvbtrust.org" && typeof event.data === "string" && event.data.includes("authorization:github:success")) {
-        
-        // 🚨 THE LOCK: Prevent rapid-fire loops
-        if (sessionStorage.getItem("cms_is_logging_in")) return;
-        sessionStorage.setItem("cms_is_logging_in", "true");
-
-        console.log("1. Intercepted token! Locking down and closing popup...");
-        
-        // Force the popup to close immediately
-        if (event.source) {
-          event.source.close();
-        }
-        
-        try {
-          // Extract token
-          const jsonString = event.data.replace("authorization:github:success:", "");
-          const payload = JSON.parse(jsonString);
-          const token = payload.token;
-          
-          console.log("2. Fetching GitHub profile for Decap...");
-          
-          // Fetch the profile
-          const userRes = await fetch("https://api.github.com/user", {
-            headers: { Authorization: `token ${token}` }
-          });
-          const userData = await userRes.json();
-          
-          // 🌟 THE PERFECT PROFILE (Decap needs all of these to accept the session)
-          const decapUser = {
-            token: token,
-            backendName: "github",
-            name: userData.name || userData.login,
-            login: userData.login,
-            avatar_url: userData.avatar_url
-          };
-          
-          // Save to BOTH modern and legacy keys just to be bulletproof
-          localStorage.setItem("decap-cms-user", JSON.stringify(decapUser));
-          localStorage.setItem("netlify-cms-user", JSON.stringify(decapUser));
-          
-          console.log("3. Perfect profile locked in vault. Reloading...");
-          
-          // Reload into the dashboard
-          window.location.reload();
-          
-        } catch (err) {
-          console.error("Failed to process login:", err);
-          sessionStorage.removeItem("cms_is_logging_in"); // Unlock if it fails
-        }
-      }
-    }, false);
   </script>
 </head>
 
 <body>
-  <!-- This div MUST exist for Decap to render the UI -->
   <div id="nc-root"></div>
 
   <!-- Load Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.11.0/dist/decap-cms.js"></script>
 
-  <!-- Initialize -->
+  <!-- Initialize without any interference -->
   <script>
-sessionStorage.removeItem("cms_is_logging_in");
-    
-    // Boot Decap CMS
     if (window.CMS) {
-      console.log("Decap booting... Token in vault:", localStorage.getItem("decap-cms-user"));
       window.CMS.init({ config: window.CMS_CONFIG });
-    } else {
-      console.error("CMS library failed to load.");
     }
   </script>
 </body>
