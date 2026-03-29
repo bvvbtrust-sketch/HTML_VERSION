@@ -6,13 +6,17 @@
   <title>Content Manager</title>
 
   <script>
+    // 1. Tell Decap to wait for our custom configuration
     window.CMS_MANUAL_INIT = true;
+
+    // 2. Define the configuration
     window.CMS_CONFIG = {
       backend: {
         name: "github",
         repo: "bvvbtrust-sketch/HTML_VERSION",
         branch: "main",
-        base_url: "https://test2.bvvbtrust.org" // No trailing slash
+        base_url: "https://test2.bvvbtrust.org", // MUST NOT end with a slash
+        auth_endpoint: "auth"
       },
       media_folder: "images",
       public_folder: "images",
@@ -20,66 +24,39 @@
         {
           name: "website_content",
           label: "Website Content",
+          delete: false,
+          editor: { preview: false },
           files: [
             {
               label: "English Content",
               name: "en_content",
               file: "js/en.json",
-              fields: [{ label: "Trust Name", name: "trustName", widget: "string" }]
+              fields: [
+                { label: "Trust Name", name: "trustName", widget: "string" },
+                { label: "Motto", name: "motto", widget: "string" }
+              ]
+            },
+            {
+              label: "Telugu Content",
+              name: "te_content",
+              file: "js/te.json",
+              fields: [
+                { label: "ట్రస్ట్ పేరు", name: "trustName", widget: "string" },
+                { label: "ధ్యేయం", name: "motto", widget: "string" }
+              ]
             }
           ]
         }
       ]
-    };
-
-    // 🚀 THE SANITIZER: This forces Decap to accept the popup message
-    const origAddEventListener = window.addEventListener;
-    window.addEventListener = function(type, listener, options) {
-      if (type === 'message') {
-        const origListener = listener;
-        listener = function(event) {
-          if (typeof event.data === 'string' && event.data.includes('authorization:github:success')) {
-            console.log("Sanitizer caught the token! Rebuilding payload for Decap...");
-            
-            try {
-              // 1. Extract the raw token from your proxy
-              const rawPayload = JSON.parse(event.data.replace("authorization:github:success:", ""));
-              
-              // 2. Rebuild the exact payload Decap's engine requires
-              const perfectData = "authorization:github:success:" + JSON.stringify({
-                token: rawPayload.token,
-                provider: "github"
-              });
-
-              // 3. Create a fake event with the PERFECT origin to bypass Decap's strict security check
-              const fakeEvent = new MessageEvent('message', {
-                data: perfectData,
-                origin: "https://test2.bvvbtrust.org", // MUST exactly match base_url
-                source: window
-              });
-
-              console.log("Handing perfect payload to Decap CMS React Engine...");
-              
-              // 4. Feed it to Decap
-              return origListener.call(this, fakeEvent);
-            } catch (err) {
-              console.error("Sanitizer failed:", err);
-            }
-          }
-          // Let all other normal messages pass through
-          return origListener.call(this, event);
-        };
-      }
-      origAddEventListener.call(this, type, listener, options);
     };
   </script>
 </head>
 
 <body>
   <div id="nc-root"></div>
-  
+
   <script src="https://unpkg.com/decap-cms@^3.11.0/dist/decap-cms.js"></script>
-  
+
   <script>
     if (window.CMS) {
       window.CMS.init({ config: window.CMS_CONFIG });
