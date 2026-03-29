@@ -8,6 +8,61 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Noto+Serif+Telugu:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+    .tree-carousel-container {
+        position: relative;
+        max-width: 800px;
+        margin: 30px auto;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .tree-slide {
+        display: none;
+        text-align: center;
+        padding: 20px;
+        animation: fadeEffect 0.6s;
+    }
+    .tree-slide.active { display: block; }
+    @keyframes fadeEffect {
+        from {opacity: 0.4;} to {opacity: 1;}
+    }
+    .tree-slide img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+    }
+    .image-caption {
+        font-style: italic;
+        font-size: 0.95rem;
+        color: #555;
+        margin-top: 15px;
+    }
+    .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(61, 43, 31, 0.7);
+        color: white;
+        border: none;
+        padding: 15px 10px;
+        cursor: pointer;
+        border-radius: 0 4px 4px 0;
+        transition: 0.3s;
+        z-index: 10;
+    }
+    .carousel-btn.next { right: 0; border-radius: 4px 0 0 4px; }
+    .carousel-btn:hover { background: rgba(61, 43, 31, 0.9); }
+    .carousel-dots { text-align: center; padding: 10px; background: #f9f9f9; }
+    .dot {
+        height: 10px; width: 10px; margin: 0 5px;
+        background-color: #bbb; border-radius: 50%;
+        display: inline-block; cursor: pointer;
+    }
+    .dot.active { background-color: #3d2b1f; }
+</style>
 </head>
 <body>
 
