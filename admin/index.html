@@ -3,64 +3,90 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Content Manager</title>
-
+  <title>CMS Auth Debugger</title>
+  <style>
+    /* The Diagnostic Terminal */
+    #debug-box { position: fixed; bottom: 0; left: 0; right: 0; height: 250px; background: #000; color: #0f0; font-family: monospace; overflow-y: auto; padding: 15px; z-index: 99999; font-size: 14px; }
+    .err { color: #ff4444; font-weight: bold; }
+    .warn { color: #ffaa00; font-weight: bold; }
+  </style>
   <script>
-    // 🔥 1. THE POPUP LOGIC (Extract token -> Fetch Profile -> Save -> Close)
+    // 1. Terminal Logger
+    window.logDebug = function(msg, type="log") {
+      console[type](msg);
+      const box = document.getElementById("debug-logs");
+      if (box) box.innerHTML += `<div class="${type}">> ${new Date().toLocaleTimeString()} - ${msg}</div>`;
+    };
+
+    // 2. The Popup Logic (Fetch Profile & Save)
     const hash = window.location.hash;
     if (hash.includes("access_token=")) {
       const token = new URLSearchParams(hash.substring(1)).get("access_token");
+      document.write("<h1 style='text-align:center; margin-top:50px;'>Validating Token with GitHub...</h1>");
       
-      // Fetch the user's profile from GitHub before saving!
-      fetch("https://api.github.com/user", {
-        headers: { Authorization: "token " + token }
+      fetch("https://api.github.com/user", { headers: { Authorization: "token " + token } })
+      .then(r => {
+        if (!r.ok) throw new Error("GitHub rejected token. Status: " + r.status);
+        return r.json();
       })
-      .then(res => res.json())
       .then(userData => {
-        // Build the EXACT complete profile Decap demands
-        const decapUser = {
+        const userObj = {
           token: token,
           backendName: "github",
           name: userData.name || userData.login,
           login: userData.login,
           avatar_url: userData.avatar_url
         };
-        
-        // Save to vault
-        localStorage.setItem("decap-cms-user", JSON.stringify(decapUser));
-        localStorage.setItem("netlify-cms-user", JSON.stringify(decapUser));
-        
-        // Tell the main window we are done, then close!
-        localStorage.setItem("cms_login_success", Date.now().toString());
-        window.close();
+        // Lock it in the vault
+        localStorage.setItem("decap-cms-user", JSON.stringify(userObj));
+        localStorage.setItem("cms_login_success", "true");
+        window.close(); // Close the popup
       })
-      .catch(err => {
-        console.error("Failed to fetch profile", err);
-        document.body.innerHTML = "<h1>Failed to fetch GitHub profile. Check console.</h1>";
+      .catch(e => {
+        document.write(`<h1 style='color:red; text-align:center'>${e.message}</h1>`);
       });
     }
 
-    // 🔥 2. THE MAIN WINDOW LOGIC (Wait for the popup to finish, then reload)
-    if (!window.location.hash.includes("access_token=")) {
-      // Listen for the popup updating the vault
-      window.addEventListener("storage", (event) => {
-        if (event.key === "cms_login_success") {
-          console.log("Vault loaded! Booting dashboard...");
-          window.location.reload();
+    // 3. X-Ray Sensors: Intercept GitHub Errors and Vault Wipes
+    const origFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const url = args[0];
+      if (typeof url === "string" && url.includes("api.github.com")) {
+        const res = await origFetch(...args);
+        if (!res.ok) {
+          logDebug(`🚨 API CRASH: GitHub returned ${res.status} when Decap tried to access ${url}`, "err");
+          const text = await res.clone().text();
+          logDebug(`🚨 REASON: ${text}`, "err");
+        } else {
+          logDebug(`✅ API Success: ${url}`);
         }
-      });
+        return res;
+      }
+      return origFetch(...args);
+    };
 
-      // Backup Watcher: Check the vault every 1 second in case the event listener fails
-      let watchVault = setInterval(() => {
+    const origRemoveItem = Storage.prototype.removeItem;
+    Storage.prototype.removeItem = function(key) {
+      if (key === "decap-cms-user") {
+        logDebug(`❌ DECAP CMS JUST DELETED YOUR TOKEN AND LOGGED YOU OUT!`, "warn");
+      }
+      origRemoveItem.call(this, key);
+    };
+
+    // 4. Main Window Watcher
+    if (!window.location.hash.includes("access_token=")) {
+      window.addEventListener("storage", (e) => {
+        if (e.key === "cms_login_success") window.location.reload();
+      });
+      setInterval(() => {
         if (localStorage.getItem("cms_login_success")) {
-          clearInterval(watchVault);
-          localStorage.removeItem("cms_login_success"); // Clean up
+          localStorage.removeItem("cms_login_success");
           window.location.reload();
         }
       }, 1000);
     }
-
-    // --- STANDARD CONFIG ---
+    
+    // 5. Config
     window.CMS_MANUAL_INIT = true;
     window.CMS_CONFIG = {
       backend: {
@@ -72,34 +98,24 @@
       },
       media_folder: "images",
       public_folder: "images",
-      collections: [
-        {
-          name: "website_content",
-          label: "Website Content",
-          files: [
-            {
-              label: "English Content",
-              name: "en_content",
-              file: "js/en.json",
-              fields: [{ label: "Trust Name", name: "trustName", widget: "string" }]
-            }
-          ]
-        }
-      ]
+      collections: [{ name: "content", label: "Content", files: [{ label: "EN", name: "en", file: "js/en.json", fields: [{name:"t", widget:"string"}] }] }]
     };
   </script>
 </head>
-
 <body>
   <div id="nc-root"></div>
   
-  <script src="https://unpkg.com/decap-cms@^3.11.0/dist/decap-cms.js"></script>
+  <div id="debug-box"><div id="debug-logs"><strong>--- DECAP CMS DIAGNOSTICS ONLINE ---</strong><br></div></div>
   
+  <script src="https://unpkg.com/decap-cms@^3.11.0/dist/decap-cms.js"></script>
   <script>
-    // Only boot Decap if we are in the main window (not the popup)
     if (window.CMS && !window.location.hash.includes("access_token=")) {
-      // Clean up our trigger key before booting
-      localStorage.removeItem("cms_login_success"); 
+      const vault = localStorage.getItem("decap-cms-user");
+      if (vault) {
+         window.logDebug("✅ Token found in vault! Decap is booting up...");
+      } else {
+         window.logDebug("Waiting for you to click Login...");
+      }
       window.CMS.init({ config: window.CMS_CONFIG });
     }
   </script>
