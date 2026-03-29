@@ -55,33 +55,49 @@
     window.addEventListener("message", async (event) => {
       if (event.origin === "https://test2.bvvbtrust.org" && typeof event.data === "string" && event.data.includes("authorization:github:success")) {
         
-        // 🚨 THE LOCK: If we are already processing the login, ignore all other messages from the popup!
+        // 🚨 THE LOCK: Prevent rapid-fire loops
         if (sessionStorage.getItem("cms_is_logging_in")) return;
         sessionStorage.setItem("cms_is_logging_in", "true");
 
         console.log("1. Intercepted token! Locking down and closing popup...");
         
-        // Force the popup to close from the main window so it stops yelling at us
+        // Force the popup to close immediately
         if (event.source) {
           event.source.close();
         }
         
         try {
-          // Extract the token
+          // Extract token
           const jsonString = event.data.replace("authorization:github:success:", "");
           const payload = JSON.parse(jsonString);
+          const token = payload.token;
           
-          // Save the exact bare-minimum object Decap needs
+          console.log("2. Fetching GitHub profile for Decap...");
+          
+          // Fetch the profile
+          const userRes = await fetch("https://api.github.com/user", {
+            headers: { Authorization: `token ${token}` }
+          });
+          const userData = await userRes.json();
+          
+          // 🌟 THE PERFECT PROFILE (Decap needs all of these to accept the session)
           const decapUser = {
-            token: payload.token,
-            backendName: "github"
+            token: token,
+            backendName: "github",
+            name: userData.name || userData.login,
+            login: userData.login,
+            avatar_url: userData.avatar_url
           };
           
+          // Save to BOTH modern and legacy keys just to be bulletproof
           localStorage.setItem("decap-cms-user", JSON.stringify(decapUser));
-          console.log("2. Token locked in vault. Reloading one time only...");
+          localStorage.setItem("netlify-cms-user", JSON.stringify(decapUser));
           
-          // Reload the page
+          console.log("3. Perfect profile locked in vault. Reloading...");
+          
+          // Reload into the dashboard
           window.location.reload();
+          
         } catch (err) {
           console.error("Failed to process login:", err);
           sessionStorage.removeItem("cms_is_logging_in"); // Unlock if it fails
