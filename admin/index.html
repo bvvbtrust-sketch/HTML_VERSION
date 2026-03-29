@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager</title>
-
   <script>
     window.CMS_MANUAL_INIT = true;
     window.CMS_CONFIG = {
@@ -17,34 +16,32 @@
       },
       media_folder: "images",
       public_folder: "images",
-      // Adding a display_name helps the React UI initialize correctly
-      site_url: "https://test1.bvvbtrust.org",
-      display_name: "BVVB Trust CMS",
+      // Force the extension globally
+      extension: "json",
+      format: "json",
       collections: [
         {
-          name: "pages",
-          label: "Website Pages",
-          delete: false,
-          editor: { preview: false },
+          // Change the name to something Decap hasn't seen yet to clear the cache
+          name: "site_data", 
+          label: "Website Content",
+          // This must be 'files' for a file-based collection
           files: [
             {
               label: "English Content",
-              name: "en_content",
+              name: "en",
               file: "js/en.json",
-              format: "json", // Explicitly tell Decap it's JSON
               fields: [
-                { label: "Trust Name", name: "trustName", widget: "string", default: "BVVB Trust" },
-                { label: "Motto", name: "motto", widget: "string", default: "" }
+                { label: "Trust Name", name: "trustName", widget: "string" },
+                { label: "Motto", name: "motto", widget: "string" }
               ]
             },
             {
               label: "Telugu Content",
-              name: "te_content",
+              name: "te",
               file: "js/te.json",
-              format: "json",
               fields: [
-                { label: "ట్రస్ట్ పేరు", name: "trustName", widget: "string", default: "" },
-                { label: "ధ్యేయం", name: "motto", widget: "string", default: "" }
+                { label: "Trust Name", name: "trustName", widget: "string" },
+                { label: "Motto", name: "motto", widget: "string" }
               ]
             }
           ]
@@ -53,7 +50,6 @@
     };
   </script>
 </head>
-
 <body>
   <div id="nc-root"></div>
   <script src="https://unpkg.com/decap-cms@^3.11.0/dist/decap-cms.js"></script>
