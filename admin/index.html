@@ -6,11 +6,9 @@
   <title>Content Manager</title>
 
   <script>
-    // 1. Tell Decap CMS not to look for config.yml automatically
+    // 1. Configuration
     window.CMS_MANUAL_INIT = true;
-
-    // 2. Define your configuration object
-window.CMS_CONFIG = {
+    window.CMS_CONFIG = {
       backend: {
         name: "github",
         repo: "bvvbtrust-sketch/HTML_VERSION",
@@ -50,51 +48,37 @@ window.CMS_CONFIG = {
       ]
     };
 
-    // 3. Handshake Debugger (Check your console to see if the popup talks to this window)
-    window.addEventListener("message", async (event) => {
-    // Only listen to the proxy
-    if (event.origin === "https://test2.bvvbtrust.org" && event.data.includes("authorization:github:success")) {
-      
-      const payload = JSON.parse(event.data.replace("authorization:github:success:", ""));
-      const token = payload.token;
-      
-      console.log("✅ Token received! Testing GitHub API access behind the scenes...");
-      
-      try {
-        // Test 1: Can we read the user profile?
-        const userRes = await fetch("https://api.github.com/user", {
-          headers: { Authorization: `token ${token}` }
-        });
-        console.log("GitHub User Check:", userRes.status, await userRes.json());
+    // 2. The Bulletproof Auto-Login Listener
+    window.addEventListener("message", (event) => {
+      // Check if the message is from our proxy and has the success string
+      if (event.origin === "https://test2.bvvbtrust.org" && typeof event.data === "string" && event.data.includes("authorization:github:success")) {
         
-        // Test 2: Can we access the specific repository?
-        const repoRes = await fetch("https://api.github.com/repos/bvvbtrust-sketch/HTML_VERSION", {
-          headers: { Authorization: `token ${token}` }
-        });
-        const repoData = await repoRes.json();
-        console.log("GitHub Repo Check:", repoRes.status, repoData);
+        console.log("Intercepted valid token! Forcing CMS login...");
         
-        // Check for push permissions
-        if (repoData.permissions && repoData.permissions.push) {
-          console.log("🟩 SUCCESS: You have push access! If Decap isn't loading, check for the site_domain bug.");
-        } else {
-          console.error("🟥 ERROR: You DO NOT have push access to bvvbtrust-sketch/HTML_VERSION. Decap CMS is silently aborting the login.");
-        }
-      } catch (err) {
-        console.error("API Test Failed:", err);
+        // Extract the token payload
+        const jsonString = event.data.replace("authorization:github:success:", "");
+        const payload = JSON.parse(jsonString);
+        
+        // Save it exactly where Decap CMS looks for it
+        localStorage.setItem("decap-cms-user", JSON.stringify({
+          token: payload.token,
+          backendName: "github"
+        }));
+        
+        // Refresh the page so Decap CMS boots up already logged in
+        window.location.reload();
       }
-    }
-  }, false);
+    }, false);
   </script>
 </head>
 
 <body>
   <div id="nc-root"></div>
 
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script src="https://unpkg.com/decap-cms@^3.11.0/dist/decap-cms.js"></script>
 
   <script>
-    // Initialize the CMS using the global config defined above
+    // 3. Initialize the CMS
     if (window.CMS) {
       CMS.init({ config: window.CMS_CONFIG });
     }
