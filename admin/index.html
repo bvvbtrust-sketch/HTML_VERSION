@@ -17,27 +17,34 @@
       },
       media_folder: "images",
       public_folder: "images",
+      // Adding a display_name helps the React UI initialize correctly
+      site_url: "https://test1.bvvbtrust.org",
+      display_name: "BVVB Trust CMS",
       collections: [
         {
-          name: "website_content",
-          label: "Website Content",
+          name: "pages",
+          label: "Website Pages",
+          delete: false,
+          editor: { preview: false },
           files: [
             {
               label: "English Content",
               name: "en_content",
               file: "js/en.json",
+              format: "json", // Explicitly tell Decap it's JSON
               fields: [
-                { label: "Trust Name", name: "trustName", widget: "string" },
-                { label: "Motto", name: "motto", widget: "string" }
+                { label: "Trust Name", name: "trustName", widget: "string", default: "BVVB Trust" },
+                { label: "Motto", name: "motto", widget: "string", default: "" }
               ]
             },
             {
               label: "Telugu Content",
               name: "te_content",
               file: "js/te.json",
+              format: "json",
               fields: [
-                { label: "ట్రస్ట్ పేరు", name: "trustName", widget: "string" },
-                { label: "ధ్యేయం", name: "motto", widget: "string" }
+                { label: "ట్రస్ట్ పేరు", name: "trustName", widget: "string", default: "" },
+                { label: "ధ్యేయం", name: "motto", widget: "string", default: "" }
               ]
             }
           ]
@@ -49,9 +56,7 @@
 
 <body>
   <div id="nc-root"></div>
-  
   <script src="https://unpkg.com/decap-cms@^3.11.0/dist/decap-cms.js"></script>
-  
   <script>
     if (window.CMS) {
       window.CMS.init({ config: window.CMS_CONFIG });
