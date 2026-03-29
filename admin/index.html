@@ -10,39 +10,31 @@
         name: "github",
         repo: "bvvbtrust-sketch/HTML_VERSION",
         branch: "main",
-        // 🚩 CHANGE: We use the proxy ONLY for the initial login
         base_url: "https://test2.bvvbtrust.org",
-        auth_endpoint: "auth",
-        // 🚩 FORCE: Tell Decap to use the direct GitHub API for data fetching
-        api_root: "https://api.github.com",
-        proxy_url: "https://test2.bvvbtrust.org/cgi-bin/proxy", // Optional, but helps some setups
-        use_graphql: false
+        auth_endpoint: "auth"
       },
-      display_name: "BVVB Trust",
       media_folder: "images",
       public_folder: "images",
       collections: [
         {
-          name: "site_data",
-          label: "Site Content",
-          editor: { preview: false },
+          name: "website",
+          label: "Website",
+          // We use 'files' to target your specific JSON files
           files: [
             {
-              label: "English Data",
+              label: "English Content",
               name: "en",
               file: "js/en.json",
               fields: [
-                { label: "Trust Name", name: "trustName", widget: "string" },
-                { label: "Motto", name: "motto", widget: "string" }
+                { label: "Trust Name", name: "trustName", widget: "string" }
               ]
             },
             {
-              label: "Telugu Data",
+              label: "Telugu Content",
               name: "te",
               file: "js/te.json",
               fields: [
-                { label: "Trust Name", name: "trustName", widget: "string" },
-                { label: "Motto", name: "motto", widget: "string" }
+                { label: "Trust Name", name: "trustName", widget: "string" }
               ]
             }
           ]
@@ -53,7 +45,7 @@
 </head>
 <body>
   <div id="nc-root"></div>
-  <script src="https://unpkg.com/decap-cms@3.1.0/dist/decap-cms.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
     if (window.CMS) {
       window.CMS.init({ config: window.CMS_CONFIG });
