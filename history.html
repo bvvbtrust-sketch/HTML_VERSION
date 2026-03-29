@@ -14,14 +14,15 @@
         html[lang="en"] .lang-te { display: none; }
         html[lang="te"] .lang-en { display: none; }
 
-       /* Optimized Family Tree Carousel Styles */
+     /* Final Fixed Carousel Styles */
 .tree-carousel-container {
     position: relative;
     max-width: 850px;
     margin: 40px auto;
     border: 1px solid #ddd;
     border-radius: 12px;
-    overflow: hidden; /* Keeps the top/sides clean */
+    /* We keep overflow hidden for the slides, but ensure padding is correct */
+    overflow: hidden; 
     background: #fff;
     box-shadow: 0 4px 20px rgba(0,0,0,0.12);
 }
@@ -29,8 +30,7 @@
 .tree-slide {
     display: none;
     text-align: center;
-    /* Added significant bottom padding to act as a buffer */
-    padding: 20px 20px 60px 20px; 
+    padding: 20px 20px 60px 20px; /* Buffer for caption */
     animation: fadeEffect 0.6s;
     box-sizing: border-box;
 }
@@ -39,50 +39,42 @@
     display: block !important; 
 }
 
-.tree-slide img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 6px;
-    display: block;
-    margin: 0 auto;
+/* NAVIGATION BUTTONS FIX */
+.carousel-btn {
+    position: absolute;
+    top: 40%; /* Centered on the image */
+    transform: translateY(-50%);
+    background: rgba(61, 43, 31, 0.8); /* Slightly darker for visibility */
+    color: white;
+    border: none;
+    padding: 20px 15px; /* Better touch target */
     cursor: pointer;
+    z-index: 100 !important; /* Forces it to the absolute top layer */
+    font-size: 24px;
+    transition: 0.3s;
+}
+
+.carousel-btn.prev { 
+    left: 0; 
+    border-radius: 0 4px 4px 0; 
+}
+
+.carousel-btn.next { 
+    right: 0; /* Ensures it stays at the very edge of the container */
+    border-radius: 4px 0 0 4px; 
+}
+
+.carousel-btn:hover { 
+    background: rgba(61, 43, 31, 1); 
 }
 
 .image-caption {
-    display: block;
     font-style: italic;
     font-size: 1.05rem;
     color: #333;
     margin-top: 25px;
-    /* This ensures the text stays inside the slide's padding */
-    margin-bottom: 10px; 
-    padding: 0 60px; /* Wider side padding to avoid arrows */
+    padding: 0 60px; /* Keeps text clear of the buttons */
     line-height: 1.6;
-    word-wrap: break-word;
-}
-
-/* Move buttons higher so they only overlap the IMAGE, not the TEXT */
-.carousel-btn {
-    position: absolute;
-    top: 35%; /* Focused on the center of the image area */
-    transform: translateY(-50%);
-    background: rgba(61, 43, 31, 0.7);
-    color: white;
-    border: none;
-    padding: 18px 14px;
-    cursor: pointer;
-    z-index: 20;
-    font-size: 20px;
-}
-
-/* Ensure the dots container doesn't overlap the text */
-.carousel-dots {
-    text-align: center;
-    padding: 15px;
-    background: #fdfdfd;
-    border-top: 1px solid #eee;
-    position: relative;
-    z-index: 10;
 }
         /* Zoom Lightbox */
         #treeLightbox {
