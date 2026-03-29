@@ -51,20 +51,39 @@
                     </div>
                 </section>
 
-                <section id="roots" class="history-chapter">
-                    <h2 class="chapter-title"><span class="chapter-num">I</span> <span data-i18n="history.ch.roots_clean"></span></h2>
-                    <p data-i18n="history.roots.p1"></p><p data-i18n="history.roots.p2"></p><p data-i18n="history.roots.p3"></p>
-                    <!-- Insert this immediately after the last paragraph of Section I -->
-                    <div class="history-image-container" style="margin: 20px 0; text-align: center;">
-                    <img src="images/family_tree_handwritten.jpeg" 
-                     alt="Handwritten Family Tree" 
-                     class="responsive-img" 
-                     style="max-width: 100%; border-radius: 8px; border: 1px solid #ddd;">
-                    <p style="font-style: italic; font-size: 0.9rem; color: #666; margin-top: 10px;" data-i18n="history.roots.image_caption">
-                        The Handwritten family tree mentioned in the records.
-                    </p>
-                    </div>                                       
-                </section>
+<!-- Section I: Roots -->
+<section id="roots" class="history-chapter">
+    <h2 class="chapter-title"><span class="chapter-num">I</span> <span data-i18n="history.ch.roots_clean"></span></h2>
+    <p data-i18n="history.roots.p1"></p>
+    <p data-i18n="history.roots.p2"></p>
+    <p data-i18n="history.roots.p3"></p>
+
+    <!-- NEW: Family Tree Carousel -->
+    <div class="tree-carousel-container">
+        <div class="tree-carousel-wrapper">
+            <!-- Slide 1: Handwritten -->
+            <div class="tree-slide active">
+                <img src="images/family_tree_handwritten.jpeg" alt="Handwritten Family Tree" class="responsive-img">
+                <p class="image-caption" data-i18n="history.roots.image_caption_handwritten">The Handwritten family tree mentioned in the records.</p>
+            </div>
+            <!-- Slide 2: Typed -->
+            <div class="tree-slide">
+                <img src="images/family_tree_typed.jpeg" alt="Typed Family Tree" class="responsive-img">
+                <p class="image-caption" data-i18n="history.roots.image_caption_typed">The Typed version of the family tree for clarity.</p>
+            </div>
+        </div>
+        
+        <!-- Navigation Arrows -->
+        <button class="carousel-btn prev" onclick="moveSlide(-1)">&#10094;</button>
+        <button class="carousel-btn next" onclick="moveSlide(1)">&#10095;</button>
+        
+        <!-- Dots -->
+        <div class="carousel-dots">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
+        </div>
+    </div>
+</section>
 
                 <section id="acharana" class="history-chapter">
                     <h2 class="chapter-title"><span class="chapter-num">II</span> <span data-i18n="history.ch.acharana_clean"></span></h2>
