@@ -12,23 +12,23 @@
         repo: "bvvbtrust-sketch/HTML_VERSION",
         branch: "main",
         base_url: "https://test2.bvvbtrust.org",
-        auth_endpoint: "auth"
+        auth_endpoint: "auth",
+        site_domain: "test1.bvvbtrust.org" // Explicitly set the domain
       },
+      // 🚀 The "Nuclear" fix for toArray errors
+      load_config_file: false, 
       media_folder: "images",
       public_folder: "images",
-      // Force the extension globally
-      extension: "json",
-      format: "json",
       collections: [
         {
-          // Change the name to something Decap hasn't seen yet to clear the cache
-          name: "site_data", 
+          name: "content_files",
           label: "Website Content",
-          // This must be 'files' for a file-based collection
+          // We use 'files' but give it a description to help React state
+          description: "Manage English and Telugu site data",
           files: [
             {
               label: "English Content",
-              name: "en",
+              name: "en_data",
               file: "js/en.json",
               fields: [
                 { label: "Trust Name", name: "trustName", widget: "string" },
@@ -37,7 +37,7 @@
             },
             {
               label: "Telugu Content",
-              name: "te",
+              name: "te_data",
               file: "js/te.json",
               fields: [
                 { label: "Trust Name", name: "trustName", widget: "string" },
@@ -55,6 +55,8 @@
   <script src="https://unpkg.com/decap-cms@^3.11.0/dist/decap-cms.js"></script>
   <script>
     if (window.CMS) {
+      // One last trick: We clear the internal state before init
+      localStorage.removeItem("netlify-cms-user"); 
       window.CMS.init({ config: window.CMS_CONFIG });
     }
   </script>
