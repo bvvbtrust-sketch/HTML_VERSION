@@ -12,18 +12,23 @@
         branch: "main",
         base_url: "https://test2.bvvbtrust.org",
         auth_endpoint: "auth",
-        use_graphql: false // 🚩 Essential to prevent toArray crashes
+        use_graphql: false
       },
       display_name: "BVVB Trust",
       media_folder: "images",
       public_folder: "images",
+      // 🚀 FORCE JSON HANDLING
+      extension: "json",
+      format: "json",
       collections: [
         {
-          name: "setup",
+          name: "site_content",
           label: "Site Content",
+          editor: { preview: false },
+          // Using a specific 'files' list is safer than 'folder' for now
           files: [
             {
-              label: "English",
+              label: "English Data",
               name: "en",
               file: "js/en.json",
               fields: [
@@ -32,12 +37,12 @@
               ]
             },
             {
-              label: "Telugu",
+              label: "Telugu Data",
               name: "te",
               file: "js/te.json",
               fields: [
-                { label: "Trust Name", name: "trustName", widget: "string" },
-                { label: "Motto", name: "motto", widget: "string" }
+                { label: "ట్రస్ట్ పేరు", name: "trustName", widget: "string" },
+                { label: "ధ్యేయం", name: "motto", widget: "string" }
               ]
             }
           ]
@@ -48,7 +53,7 @@
 </head>
 <body>
   <div id="nc-root"></div>
-  <script src="https://unpkg.com/decap-cms@3.1.0/dist/decap-cms.js"></script>
+  <script src="https://unpkg.com/decap-cms@^3.1.0/dist/decap-cms.js"></script>
   <script>
     if (window.CMS) {
       window.CMS.init({ config: window.CMS_CONFIG });
