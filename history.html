@@ -138,6 +138,16 @@
             cursor: pointer;
         }
     </style>
+    <script>
+    // Immediate Language Sync
+    (function() {
+        const savedLang = localStorage.getItem('preferredLang') || 'en';
+        document.documentElement.setAttribute('lang', savedLang);
+        if (savedLang === 'te') {
+            document.documentElement.classList.add('lang-te');
+        }
+    })();
+</script>
 </head>
 <body>
 
