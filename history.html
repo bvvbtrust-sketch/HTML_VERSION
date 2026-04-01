@@ -21,24 +21,6 @@
             });
         })();
     </script>
-    ```
-
----
-
-### Why the previous attempts might have failed:
-* **Caching:** Your browser might be serving an old version of `main.js`. After uploading the new code, press **Ctrl + Shift + R** (Hard Refresh) on your website.
-* **Execution Order:** If `main.js` is at the bottom of the page, the browser renders the whole page in English first, then tries to switch to Telugu. Putting the script in the `<head>` as shown above stops this.
-* **Missing Initialization:** Ensure that in your `main.js`, the line `updateLanguage(currentLang);` is actually being called outside of the button click listener. It should look like this:
-
-```javascript
-// Inside main.js
-document.addEventListener('DOMContentLoaded', () => {
-    let currentLang = localStorage.getItem('preferredLang') || 'en';
-    
-    // This MUST run on every page load
-    updateLanguage(currentLang); 
-
-    // ... then your click listeners
 });
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
