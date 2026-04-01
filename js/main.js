@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize language from LocalStorage or default to 'en'
-    let currentLang = localStorage.getItem('preferredLang') || 'en';
+let currentLang = window.persistedLang || localStorage.getItem('preferredLang') || 'en';
     const langToggleBtn = document.getElementById('langToggle');
 
     // --- Async Language Switcher ---
