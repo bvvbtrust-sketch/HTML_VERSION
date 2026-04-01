@@ -23,7 +23,8 @@
     "events": "Events",
     "contact": "Contact",
     "donate": "Donate",
-    "gallery": "Gallery"
+    "gallery": "Gallery",
+    "calendar": "Calendar"
   },
   "terms": {
     "s3_1_p": "Use the site to learn about programs and make voluntary donations.",
