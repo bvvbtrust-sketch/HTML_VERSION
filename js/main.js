@@ -1,10 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize language from LocalStorage or default to 'en'
-let currentLang = window.persistedLang || localStorage.getItem('preferredLang') || 'en';
+    let currentLang = window.persistedLang || localStorage.getItem('preferredLang') || 'en';
     const langToggleBtn = document.getElementById('langToggle');
 
+    // --- FIX: Disable browser's native scroll restoration so it doesn't
+    //     fire on the empty page (before i18n content loads) and land in
+    //     the wrong spot. We handle restoration manually after content loads.
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    // --- FIX: Save scroll position just before the page unloads/refreshes ---
+    window.addEventListener('beforeunload', () => {
+        sessionStorage.setItem('scrollY_' + location.pathname, window.scrollY);
+    });
+
     // --- Async Language Switcher ---
-    async function updateLanguage(lang) {
+    async function updateLanguage(lang, isInit = false) {
         try {
             const response = await fetch(`js/${lang}.json`);
             if (!response.ok) throw new Error(`Could not load ${lang}.json`);
@@ -12,15 +24,15 @@ let currentLang = window.persistedLang || localStorage.getItem('preferredLang') 
 
             currentLang = lang;
             // Save the selection for other pages
-            localStorage.setItem('preferredLang', lang); 
-            
+            localStorage.setItem('preferredLang', lang);
+
             // Update button text and HTML attributes
             langToggleBtn.textContent = lang === 'en' ? 'తెలుగు' : 'English';
             document.documentElement.setAttribute('lang', lang);
 
             // Update font families and scaling classes
             document.body.style.fontFamily = lang === 'en' ? "'Montserrat', sans-serif" : "'Noto Serif Telugu', serif";
-            
+
             if (lang === 'te') {
                 document.documentElement.classList.add('lang-te');
             } else {
@@ -31,10 +43,10 @@ let currentLang = window.persistedLang || localStorage.getItem('preferredLang') 
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const keyPath = el.getAttribute('data-i18n');
                 const keys = keyPath.split('.');
-                let text = langData; 
-                
+                let text = langData;
+
                 keys.forEach(k => { if (text) text = text[k]; });
-                
+
                 if (text) {
                     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                         el.placeholder = text;
@@ -43,18 +55,32 @@ let currentLang = window.persistedLang || localStorage.getItem('preferredLang') 
                     }
                 }
             });
+
+            // --- FIX: After translations have filled in all content (page is now
+            //     full height), restore the saved scroll position on init only.
+            //     requestAnimationFrame ensures the DOM has been painted first. ---
+            if (isInit) {
+                const savedY = sessionStorage.getItem('scrollY_' + location.pathname);
+                if (savedY) {
+                    requestAnimationFrame(() => {
+                        window.scrollTo({ top: parseInt(savedY, 10), behavior: 'instant' });
+                        sessionStorage.removeItem('scrollY_' + location.pathname);
+                    });
+                }
+            }
+
         } catch (error) {
             console.error("Translation Error:", error);
         }
     }
 
-    // Initialize the page with the persistent language
-    updateLanguage(currentLang);
+    // Initialize the page — pass isInit=true so scroll restoration runs
+    updateLanguage(currentLang, true);
 
     langToggleBtn.addEventListener('click', () => {
         const nextLang = currentLang === 'en' ? 'te' : 'en';
         updateLanguage(nextLang);
-        
+
         // Close mobile menu if open
         const hamburger = document.getElementById('hamburger');
         const navLinksContainer = document.getElementById('navLinks');
@@ -65,22 +91,22 @@ let currentLang = window.persistedLang || localStorage.getItem('preferredLang') 
     });
 
     // --- The rest of your existing logic (Scroll Spying, Hamburger, Carousel, Lightbox) remains unchanged ---
-    
+
     // --- Scroll Spying ---
     const navbar = document.getElementById('navbar');
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-links a');
-    
+
     // --- Mobile Hamburger Menu ---
     const hamburger = document.getElementById('hamburger');
     const navLinksContainer = document.getElementById('navLinks');
-    
+
     if (hamburger && navLinksContainer) {
         hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('active');
             navLinksContainer.classList.toggle('active');
         });
-        
+
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 hamburger.classList.remove('active');
@@ -96,7 +122,7 @@ let currentLang = window.persistedLang || localStorage.getItem('preferredLang') 
             if (window.scrollY > 50) navbar.classList.add('scrolled');
             else navbar.classList.remove('scrolled');
         }
-        
+
         if (scrollToTopBtn) {
             if (window.scrollY > 300) scrollToTopBtn.classList.add('show');
             else scrollToTopBtn.classList.remove('show');
@@ -205,7 +231,7 @@ let currentLang = window.persistedLang || localStorage.getItem('preferredLang') 
         lightbox.addEventListener('click', (e) => {
             if (e.target === lightbox) closeLightbox();
         });
-        
+
         document.addEventListener('keydown', (e) => {
             if (!lightbox.classList.contains('active')) return;
             if (e.key === 'Escape') closeLightbox();
