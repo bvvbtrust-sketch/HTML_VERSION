@@ -3,9 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLang = window.persistedLang || localStorage.getItem('preferredLang') || 'en';
     const langToggleBtn = document.getElementById('langToggle');
 
-    // --- FIX: Disable browser's native scroll restoration so it doesn't
-    //     fire on the empty page (before i18n content loads) and land in
-    //     the wrong spot. We handle restoration manually after content loads.
+    // --- FIX: Disable browser's native scroll restoration entirely.
+    //     We handle it manually after BOTH translations and images are loaded. ---
     if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
     }
@@ -15,6 +14,29 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('scrollY_' + location.pathname, window.scrollY);
     });
 
+    // --- FIX: Two-gate scroll restoration ---
+    // Both gates must open before we scroll: (1) translations done, (2) page fully loaded.
+    // This prevents restoring scroll before images/fonts have settled the page height.
+    let translationsDone = false;
+    let pageFull = false;
+    const savedY = parseInt(sessionStorage.getItem('scrollY_' + location.pathname), 10);
+
+    function tryRestoreScroll() {
+        if (!savedY || !translationsDone || !pageFull) return;
+        window.scrollTo({ top: savedY, behavior: 'instant' });
+        sessionStorage.removeItem('scrollY_' + location.pathname);
+    }
+
+    // Gate 2: fires when all images/fonts/subresources are loaded
+    if (document.readyState === 'complete') {
+        pageFull = true;
+    } else {
+        window.addEventListener('load', () => {
+            pageFull = true;
+            tryRestoreScroll();
+        }, { once: true });
+    }
+
     // --- Async Language Switcher ---
     async function updateLanguage(lang, isInit = false) {
         try {
@@ -23,14 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const langData = await response.json();
 
             currentLang = lang;
-            // Save the selection for other pages
             localStorage.setItem('preferredLang', lang);
 
-            // Update button text and HTML attributes
             langToggleBtn.textContent = lang === 'en' ? 'తెలుగు' : 'English';
             document.documentElement.setAttribute('lang', lang);
 
-            // Update font families and scaling classes
             document.body.style.fontFamily = lang === 'en' ? "'Montserrat', sans-serif" : "'Noto Serif Telugu', serif";
 
             if (lang === 'te') {
@@ -44,9 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const keyPath = el.getAttribute('data-i18n');
                 const keys = keyPath.split('.');
                 let text = langData;
-
                 keys.forEach(k => { if (text) text = text[k]; });
-
                 if (text) {
                     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                         el.placeholder = text;
@@ -56,17 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // --- FIX: After translations have filled in all content (page is now
-            //     full height), restore the saved scroll position on init only.
-            //     requestAnimationFrame ensures the DOM has been painted first. ---
+            // Gate 1: translations are now in the DOM
             if (isInit) {
-                const savedY = sessionStorage.getItem('scrollY_' + location.pathname);
-                if (savedY) {
-                    requestAnimationFrame(() => {
-                        window.scrollTo({ top: parseInt(savedY, 10), behavior: 'instant' });
-                        sessionStorage.removeItem('scrollY_' + location.pathname);
-                    });
-                }
+                translationsDone = true;
+                tryRestoreScroll();
             }
 
         } catch (error) {
@@ -74,14 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Initialize the page — pass isInit=true so scroll restoration runs
+    // Initialize — isInit=true enables scroll restoration
     updateLanguage(currentLang, true);
 
     langToggleBtn.addEventListener('click', () => {
         const nextLang = currentLang === 'en' ? 'te' : 'en';
         updateLanguage(nextLang);
 
-        // Close mobile menu if open
         const hamburger = document.getElementById('hamburger');
         const navLinksContainer = document.getElementById('navLinks');
         if (hamburger && navLinksContainer) {
@@ -89,8 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinksContainer.classList.remove('active');
         }
     });
-
-    // --- The rest of your existing logic (Scroll Spying, Hamburger, Carousel, Lightbox) remains unchanged ---
 
     // --- Scroll Spying ---
     const navbar = document.getElementById('navbar');
