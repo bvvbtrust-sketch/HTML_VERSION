@@ -378,6 +378,22 @@
         lightbox.addEventListener('click', function(e) {
             if (e.target !== lightboxImg) closeLightbox();
         });
+
+        // --- Sidebar scroll spy for history chapters ---
+        const historyNavLinks = document.querySelectorAll('.history-nav-link');
+        const historyChapters = document.querySelectorAll('.history-chapter');
+
+        const chapterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    historyNavLinks.forEach(link => link.classList.remove('active'));
+                    const activeLink = document.querySelector(`.history-nav-link[href="#${entry.target.id}"]`);
+                    if (activeLink) activeLink.classList.add('active');
+                }
+            });
+        }, { threshold: 0.3, rootMargin: "-100px 0px -40% 0px" });
+
+        historyChapters.forEach(chapter => chapterObserver.observe(chapter));
     </script>
 </body>
 </html>
